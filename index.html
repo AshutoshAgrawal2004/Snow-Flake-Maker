@@ -1,0 +1,480 @@
+<!-- Snowflake drawing Logic by Coding Train -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <link rel="stylesheet" href="style.css">
+
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+    integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+
+  <script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-app.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.10.2/p5.min.js"
+    integrity="sha256-8IAwtdm0tRSYpMA1G5K1jpeHZq1N02yrdpoBteVVuMc=" crossorigin="anonymous"></script>
+
+  <script src="https://www.gstatic.com/firebasejs/6.3.0/firebase-firestore.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.0.4/jscolor.min.js"></script>
+  <title>Snow Flake Make & Share</title>
+</head>
+
+<body onload="init()">
+  <header>
+    Snow Flake <br />Make & Share
+  </header>
+  <blockquote class="twitter-tweet">
+    <p lang="en" dir="ltr">Happy Holidays!<a href="https://twitter.com/shiffman?ref_src=twsrc%5Etfw">@shiffman</a> Why
+      one snowflake when the world can make and share snowflakes with you <a
+        href="https://t.co/TmUfOPqibK">https://t.co/TmUfOPqibK</a> <a
+        href="https://t.co/865JpZGC3y">pic.twitter.com/865JpZGC3y</a></p>&mdash; Ashutosh Agrawal (@Ashutos67989346) <a
+      href="https://twitter.com/Ashutos67989346/status/1210506377468137472?ref_src=twsrc%5Etfw">December 27, 2019</a>
+  </blockquote>
+  <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+  <div class="fbconsole">
+    Title <br><input type="text" name="" value="" id="title" maxlength="50"><br>
+    Creator <br><input type="text" name="" value="" id="creator" maxlength="50"><br>
+    <button type="button" name="button" id="savetofb" onclick="saveImage()">Save to Firebase</button>
+  </div>
+
+
+  <!--  -->
+  <!-- p5 related stuff -->
+  <div class="sketch">
+    <span id="sizeval">3</span>
+
+    <input type="range" name="" id="size" value="3" min="0.1" max="10" step='0.1'>
+
+    <button type="button" name="button" id="reset" onclick="resetpainting()">Clear</button>
+    <button id="saveart">Save</button>
+    <div class="color-pallete">
+      <button id="selected-col"
+        class="col jscolor {onFineChange:'updateColor(this)',valueElement:null,value:'ffffff'}"></button>
+      <button id="selected-col"
+        class="col jscolor {onFineChange:'updateColor(this)',valueElement:null,value:'c6fbff'}"></button>
+      <button id="selected-col"
+        class="col jscolor {onFineChange:'updateColor(this)',valueElement:null,value:'abf0ff'}"></button>
+      <button id="selected-col"
+        class="col jscolor {onFineChange:'updateColor(this)',valueElement:null,value:'99c4ce'}"></button>
+    </div>
+    Smart Color
+    <input type="checkbox" name="smartColor" id="smartColor">
+    Smart Brush
+    <input type="checkbox" name="smartBrush" id="smartBrush">
+
+    <div class="canvascontainer"></div>
+  </div>
+  <select id="filterlist" name="">
+    <option value="likes">Most Popular</option>
+    <option value="timestamp">Most Recent</option>
+  </select>
+  <div class="imgcontainer">
+
+  </div>
+  <div id="snackbar">Snackbar</div>
+  <footer class="love">Made with <i class="fa fa-heart "></i> by <a
+      href="https://www.sololearn.com/Profile/10779261">Ashutosh Agrawal</a>
+  </footer>
+  <script src="script.js"></script>
+  <script>
+    var _0x280f = ['b25l', 'bmV4dEVsZW1lbnRTaWJsaW5n', 'dGV4dENvbnRlbnQ=', 'dGFyZ2V0', 'Y2xhc3NOYW1l', 'aW5jcmVtZW50',
+      'bGlrZWQ=', 'UmVhZHkh', 'cmVwbGFjZQ==', 'JmFtcDs=', 'JnF1b3Q7', 'YXBwbHk=',
+      'e30uY29uc3RydWN0b3IoInJldHVybiB0aGlzIikoICk=', 'Y29uc29sZQ==', 'bG9n', 'd2Fybg==', 'aW5mbw==', 'ZXJyb3I=',
+      'ZGVidWc=', 'ZXhjZXB0aW9u', 'dHJhY2U=', 'QUl6YVN5QUI5MmlxQks5dW1NU0VyOENZNXhBTzBpVEFCLXF4REcw',
+      'cDUtZHJhd2luZy1zaGFyaW5nLmZpcmViYXNlYXBwLmNvbQ==', 'aHR0cHM6Ly9wNS1kcmF3aW5nLXNoYXJpbmcuZmlyZWJhc2Vpby5jb20=',
+      'NzYxNjE1NjA3NjI3', 'MTo3NjE2MTU2MDc2Mjc6d2ViOjI5NTc5MGQ3MmNiMmRmZjM=', 'aW5pdGlhbGl6ZUFwcA==', 'ZmlyZXN0b3Jl',
+      'Y29sbGVjdGlvbg==', 'U25vdyBGbGFrZXM=', 'I3NuYWNrYmFy', 'I2ZpbHRlcmxpc3Q=', 'dmFs', 'Y2hhbmdl',
+      'bG9hZGluZy4uLg==', 'dG9EYXRhVVJM', 'LmZiY29uc29sZQ==', 'Y3Nz', 'ZGlzcGxheQ==', 'YmxvY2s=', 'LnNrZXRjaA==',
+      'LmltZ2NvbnRhaW5lcg==', 'bm9uZQ==', 'Y2xpY2s=', 'U2F2aW5nLi4uLi4=', 'I3RpdGxl', 'I2NyZWF0b3I=', 'YWRk', 'ZG9j',
+      'dXBkYXRl', 'RmllbGRWYWx1ZQ==', 'c2VydmVyVGltZXN0YW1w', 'dGhlbg==',
+      'CiAgICAgICAgICA8ZGl2IGNsYXNzPSJvbmVpbWFnZSI+CiAgICAgICAgICAgIDxkaXYgY2xhc3M9ImltZ3RpdGxlIj4=',
+      'PC9kaXY+CiAgICAgICAgICAgIDxpbWcgc3JjPSI=',
+      'PC9kaXY+CiAgICAgICAgICAgIDxidXR0b24gY2xhc3M9Imxpa2VidG4gZmFyIGZhLXRodW1icy11cCIgZGlzYWJsZWQ+PC9idXR0b24+CiAgICAgICAgICAgICA8c3BhbiBpZD0ibm9vZmxpa2VzIj4wPC9zcGFuPgogICAgICAgICAgICAKICAgICAgICAgIDwvZGl2PgogICAgICAgICAg',
+      'aW5uZXJIVE1M', 'Y2F0Y2g=', 'ZGVzYw==', 'bGltaXQ=', 'Z2V0', 'Zmlyc3RDaGlsZA==', 'Zm9yRWFjaA==', 'ZGF0YQ==',
+      'dGl0bGU=', 'PC9kaXY+CiAgICAgICAgPGRpdiBjbGFzcz0nbG9hZGVkaW1nY29udGFpbmVyJz4KICAgICAgICA8aW1nIHNyYz0i',
+      'aW1ndXJs',
+      'IiBhbHQ9IkZhaWxlZCB0byBsb2FkIiBjbGFzcz0ibG9hZGVkaW1nIj4KICAgICAgICA8L2Rpdj4gCiAgICAgICAgPGRpdiBjbGFzcz0icGFpbnRlciI+',
+      'Y3JlYXRvcg==', 'PC9kaXY+CiAgICAgICAgPGJ1dHRvbiBjbGFzcz0ibGlrZWJ0biBmYXIgZmEtdGh1bWJzLXVwIiBpZD0i', 'bGlrZXM=',
+      'PC9zcGFuPgogICAgICAgICAKICAgICAgPC9kaXY+CiAgICAgIA==', 'TG9hZGVkIQ==', 'Lmxpa2VidG4='
+    ];
+    (function (_0x416984, _0x39340b) {
+      var _0x56a554 = function (_0x546470) {
+        while (--_0x546470) {
+          _0x416984['push'](_0x416984['shift']());
+        }
+      };
+      _0x56a554(++_0x39340b);
+    }(_0x280f, 0x17d));
+    var _0x5d43 = function (_0x940d2, _0x214a9d) {
+      _0x940d2 = _0x940d2 - 0x0;
+      var _0xf03d5f = _0x280f[_0x940d2];
+      if (_0x5d43['diuDmq'] === undefined) {
+        (function () {
+          var _0x46c1a7;
+          try {
+            var _0x397e88 = Function('return\x20(function()\x20' + '{}.constructor(\x22return\x20this\x22)(\x20)' +
+              ');');
+            _0x46c1a7 = _0x397e88();
+          } catch (_0x2af015) {
+            _0x46c1a7 = window;
+          }
+          var _0x59392c = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+          _0x46c1a7['atob'] || (_0x46c1a7['atob'] = function (_0x3c3ba5) {
+            var _0xf5edac = String(_0x3c3ba5)['replace'](/=+$/, '');
+            for (var _0x3108b9 = 0x0, _0x1ab09d, _0x26b34e, _0x4c45af = 0x0, _0x1345bb = ''; _0x26b34e =
+              _0xf5edac['charAt'](_0x4c45af++); ~_0x26b34e && (_0x1ab09d = _0x3108b9 % 0x4 ? _0x1ab09d * 0x40 +
+                _0x26b34e : _0x26b34e, _0x3108b9++ % 0x4) ? _0x1345bb += String['fromCharCode'](0xff &
+                _0x1ab09d >> (-0x2 * _0x3108b9 & 0x6)) : 0x0) {
+              _0x26b34e = _0x59392c['indexOf'](_0x26b34e);
+            }
+            return _0x1345bb;
+          });
+        }());
+        _0x5d43['RvUSRt'] = function (_0x4c6116) {
+          var _0xcee766 = atob(_0x4c6116);
+          var _0x31cc5f = [];
+          for (var _0x162656 = 0x0, _0xcbd3b7 = _0xcee766['length']; _0x162656 < _0xcbd3b7; _0x162656++) {
+            _0x31cc5f += '%' + ('00' + _0xcee766['charCodeAt'](_0x162656)['toString'](0x10))['slice'](-0x2);
+          }
+          return decodeURIComponent(_0x31cc5f);
+        };
+        _0x5d43['aVjilr'] = {};
+        _0x5d43['diuDmq'] = !![];
+      }
+      var _0x3616d4 = _0x5d43['aVjilr'][_0x940d2];
+      if (_0x3616d4 === undefined) {
+        _0xf03d5f = _0x5d43['RvUSRt'](_0xf03d5f);
+        _0x5d43['aVjilr'][_0x940d2] = _0xf03d5f;
+      } else {
+        _0xf03d5f = _0x3616d4;
+      }
+      return _0xf03d5f;
+    };
+    var _0x498e3e = function () {
+      var _0x3d2ec8 = !![];
+      return function (_0x3ecaa6, _0x3891d0) {
+        var _0x4f4155 = _0x3d2ec8 ? function () {
+          if (_0x3891d0) {
+            var _0x4919d4 = _0x3891d0[_0x5d43('0x0')](_0x3ecaa6, arguments);
+            _0x3891d0 = null;
+            return _0x4919d4;
+          }
+        } : function () {};
+        _0x3d2ec8 = ![];
+        return _0x4f4155;
+      };
+    }();
+    var _0xc94f5e = _0x498e3e(this, function () {
+      var _0x437149 = function () {};
+      var _0x22a783;
+      try {
+        var _0x33bc5a = Function('return\x20(function()\x20' + _0x5d43('0x1') + ');');
+        _0x22a783 = _0x33bc5a();
+      } catch (_0x25e342) {
+        _0x22a783 = window;
+      }
+      if (!_0x22a783[_0x5d43('0x2')]) {
+        _0x22a783[_0x5d43('0x2')] = function (_0x437149) {
+          var _0x563551 = {};
+          _0x563551[_0x5d43('0x3')] = _0x437149;
+          _0x563551[_0x5d43('0x4')] = _0x437149;
+          _0x563551['debug'] = _0x437149;
+          _0x563551[_0x5d43('0x5')] = _0x437149;
+          _0x563551[_0x5d43('0x6')] = _0x437149;
+          _0x563551['exception'] = _0x437149;
+          _0x563551['trace'] = _0x437149;
+          return _0x563551;
+        }(_0x437149);
+      } else {
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x3')] = _0x437149;
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x4')] = _0x437149;
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x7')] = _0x437149;
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x5')] = _0x437149;
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x6')] = _0x437149;
+        _0x22a783[_0x5d43('0x2')][_0x5d43('0x8')] = _0x437149;
+        _0x22a783['console'][_0x5d43('0x9')] = _0x437149;
+      }
+    });
+    _0xc94f5e();
+    var firebaseConfig = {
+      'apiKey': _0x5d43('0xa'),
+      'authDomain': _0x5d43('0xb'),
+      'databaseURL': _0x5d43('0xc'),
+      'projectId': 'p5-drawing-sharing',
+      'storageBucket': '',
+      'messagingSenderId': _0x5d43('0xd'),
+      'appId': _0x5d43('0xe')
+    };
+    var db, imgcollection, imgurl;
+    var imgcontainer, snackbar, filterlist, filterbasis, savebtn, savetofbbtn;
+
+    function init() {
+      firebase[_0x5d43('0xf')](firebaseConfig);
+      db = firebase[_0x5d43('0x10')]();
+      imgcollection = db[_0x5d43('0x11')](_0x5d43('0x12'));
+      snackbar = $(_0x5d43('0x13'))[0x0];
+      makesnack('Firebase\x20is\x20Ready');
+      imgcontainer = $('.imgcontainer')[0x0];
+      filterlist = $(_0x5d43('0x14'));
+      filterbasis = filterlist[_0x5d43('0x15')]();
+      filterlist[_0x5d43('0x16')](() => {
+        filterbasis = filterlist[_0x5d43('0x15')]();
+        makesnack(_0x5d43('0x17'));
+        showImages();
+      });
+      savebtn = $('#saveart');
+      savebtn['click'](() => {
+        imgurl = canvas[_0x5d43('0x18')]();
+        $(_0x5d43('0x19'))[_0x5d43('0x1a')](_0x5d43('0x1b'), _0x5d43('0x1c'));
+        $(_0x5d43('0x1d'))[_0x5d43('0x1a')](_0x5d43('0x1b'), 'none');
+        $(_0x5d43('0x1e'))[_0x5d43('0x1a')](_0x5d43('0x1b'), _0x5d43('0x1f'));
+      });
+      savetofbbtn = $('#savetofb');
+      savetofbbtn[_0x5d43('0x20')](() => {
+        $(_0x5d43('0x19'))[_0x5d43('0x1a')](_0x5d43('0x1b'), _0x5d43('0x1f'));
+        $(_0x5d43('0x1d'))[_0x5d43('0x1a')](_0x5d43('0x1b'), _0x5d43('0x1c'));
+        $(_0x5d43('0x1e'))[_0x5d43('0x1a')](_0x5d43('0x1b'), _0x5d43('0x1c'));
+      });
+      showImages();
+    }
+
+    function saveImage() {
+      makesnack(_0x5d43('0x21'));
+      var _0x1211c5 = $(_0x5d43('0x22'))[_0x5d43('0x15')]();
+      var _0x37f541 = $(_0x5d43('0x23'))[_0x5d43('0x15')]();
+      var _0xefe5d3 = {
+        'title': _0x1211c5,
+        'creator': _0x37f541,
+        'imgurl': imgurl,
+        'likes': 0x0
+      };
+      imgcollection[_0x5d43('0x24')](_0xefe5d3)['then'](_0x138c24 => {
+        imgcollection[_0x5d43('0x25')](_0x138c24['id'])[_0x5d43('0x26')]({
+          'docid': _0x138c24['id'],
+          'timestamp': firebase[_0x5d43('0x10')][_0x5d43('0x27')][_0x5d43('0x28')]()
+        })[_0x5d43('0x29')](() => {
+          makesnack('Saved');
+          let _0x2deffd = _0x5d43('0x2a') + encodeHTML(_0x1211c5) + _0x5d43('0x2b') + imgurl +
+            '\x22\x20alt=\x22Failed\x20to\x20load\x22\x20class=\x22loadedimg\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22painter\x22>' +
+            encodeHTML(_0x37f541) + _0x5d43('0x2c');
+          imgcontainer[_0x5d43('0x2d')] += _0x2deffd;
+        });
+      })[_0x5d43('0x2e')](_0x56696c => makesnack(_0x56696c));
+    }
+
+    function showImages() {
+      makesnack(_0x5d43('0x17'));
+      imgcollection['orderBy'](filterbasis, _0x5d43('0x2f'))[_0x5d43('0x30')](0xa)[_0x5d43('0x31')]()[_0x5d43('0x29')](
+        _0x47e8df => {
+          while (imgcontainer[_0x5d43('0x32')]) imgcontainer['removeChild'](imgcontainer[_0x5d43('0x32')]);
+          _0x47e8df[_0x5d43('0x33')](_0x4f69a2 => {
+            let _0x1c96a4 = _0x4f69a2[_0x5d43('0x34')]();
+            let _0xca756b =
+              '\x0a\x20\x20\x20\x20\x20\x20<div\x20class=\x22oneimage\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22imgtitle\x22>' +
+              encodeHTML(_0x1c96a4[_0x5d43('0x35')]) + _0x5d43('0x36') + _0x1c96a4[_0x5d43('0x37')] + _0x5d43(
+                '0x38') + encodeHTML(_0x1c96a4[_0x5d43('0x39')]) + _0x5d43('0x3a') + _0x1c96a4['docid'] +
+              '\x22></button>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20<span\x20id=\x22nooflikes\x22>' + _0x1c96a4[
+                _0x5d43('0x3b')] + _0x5d43('0x3c');
+            imgcontainer[_0x5d43('0x2d')] += _0xca756b;
+          });
+          makesnack(_0x5d43('0x3d'));
+        })[_0x5d43('0x29')](() => {
+        let _0xac3e0e = $(_0x5d43('0x3e'));
+        _0xac3e0e[_0x5d43('0x3f')](_0x5d43('0x20'), _0x163379 => {
+          console[_0x5d43('0x3')]('liked');
+          var _0x17b308 = Number(_0x163379['target'][_0x5d43('0x40')][_0x5d43('0x41')]) + 0x1;
+          var _0x1bac32 = _0x163379[_0x5d43('0x42')]['id'];
+          _0x163379['target'][_0x5d43('0x43')] = 'likebtn\x20fas\x20fa-thumbs-up';
+          imgcollection[_0x5d43('0x25')](_0x1bac32)['update']({
+            'likes': firebase[_0x5d43('0x10')][_0x5d43('0x27')][_0x5d43('0x44')](0x1)
+          })[_0x5d43('0x29')](() => {
+            makesnack(_0x5d43('0x45'));
+            _0x163379[_0x5d43('0x42')][_0x5d43('0x40')][_0x5d43('0x41')] = _0x17b308;
+          });
+        });
+        makesnack(_0x5d43('0x46'));
+      })[_0x5d43('0x2e')](_0xb0675c => {
+        makesnack('failed\x20retrying\x20now.....');
+        showImages();
+      });
+    }
+
+    function encodeHTML(_0x24d5cb) {
+      return _0x24d5cb[_0x5d43('0x47')](/&/g, _0x5d43('0x48'))[_0x5d43('0x47')](/</g, '&lt;')[_0x5d43('0x47')](/"/g,
+        _0x5d43('0x49'));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //See there's nothing! I told you naa!!!!!
+  </script>
+
+</body>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Kuch Mila ? -->
