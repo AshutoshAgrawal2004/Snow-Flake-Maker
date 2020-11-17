@@ -25,7 +25,7 @@ let xoff = 0;
 function setup() {
 	let mycanvas = createCanvas(250, 250);
 	angleMode(DEGREES);
-	background(205,20,20);
+	background(0);
 	// colorMode(HSB, 255, 255, 255);
 	//colorMode(HSB);
 
@@ -119,6 +119,6 @@ function draw() {
 
 function resetpainting() {
 	if (confirm('This will clear your whole painting')) {
-		background(205,20,20);
+		background(0);
 	}
 }
